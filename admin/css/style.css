@@ -5,6 +5,18 @@
     font-family: "Poppins";
 }
 
+.notification-icon {
+    font-size: 2rem; /* Aumenta o tamanho do ícone */
+    position: relative;
+}
+.notification-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1rem; /* Aumenta o tamanho do texto no badge */
+    padding: 0.5em 0.8em; /* Ajusta o padding do badge */
+}
+
 .container-login {
     background-color: #eeeeee;
     min-height: 100vh;
@@ -138,14 +150,15 @@
     background-image: url("https://www.artzstudio.com/content/images/wordpress/2020/05/web-servers-404-not-found.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: top;
+    background-position: center;
     min-width: 100vw;
-    min-height: 100vh;
+    min-height: 80vh;
     overflow-x: hidden;
 }
-
+s
 .footer {
-    background-color: var(--bs-light);
+    background-color: #0d6efd;
+    background-image: linear-gradient(70deg, #0d6efd 0%, #5498ff 100%);
     padding: 30px 0px;
     font-family: "Play", sans-serif;
     text-align: center;
@@ -155,19 +168,19 @@
     width: 100%;
     margin: 1% 0%;
     padding: 0.6% 0%;
-    color: #000;
+    color: #fff;
     font-size: 0.8em;
     display: inline-block;
 }
 
 .footer .row a {
     text-decoration: none;
-    color: #000;
+    color: #fff;
     transition: 0.5s;
 }
 
 .footer .row a:hover {
-    color: #000;
+    color: #fff;
 }
 
 .footer .row ul {
@@ -184,18 +197,17 @@
     margin: 0% 1%;
 }
 
-@media (max-width: 720px) {
+@media  (max-width:720px) {
     .footer {
-        text-align: left;
+        text-align: center;
         padding: 5%;
     }
     .footer .row ul li {
         display: block;
         margin: 10px 0px;
-        text-align: left;
+        text-align: center;
     }
     .footer .row a i {
         margin: 0% 3%;
     }
 }
-

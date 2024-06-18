@@ -1,21 +1,37 @@
 <header class="bg-light">
     <div class="container d-flex justify-content-between">
         <div class="logo">
-            <img style="width: 200px;" class="" src="./assets/logo.png" alt="">
+            <img style="width: 120px;" class="" src="./assets/logo.png" alt="">
         </div>
         <nav class="navbar navbar-expand-lg bg-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="view/home">Home</a>
-                        <a class="nav-link" href="#">Features</a>
-                        <a class="nav-link" href="#">Pricing</a>
-                        <a class="nav-link disabled">Disabled</a>
+                        <a class="nav-link" aria-current="page" href="view/home">Campanhas</a>
+                        <a class="nav-link" href="view/visitas">Visitas Domiciliares</a>
+                        <a class="nav-link" href="cadastro/idoso">Cadastro de Idoso</a>
                     </div>
+                </div>
+                <div class="ms-auto">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                <span class="badge bg-primary d-flex justify-content-between p-2">
+                                    <div style="font-size: 18px; margin-right: 5px" class="">
+                                        3
+                                    </div>
+                                    <i style="color: #fff; font-size: 16px" class="bi bi-bell-fill"></i>
+
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Vacina Gripe</a></li>
+                                <li><a class="dropdown-item" href="#">Vacina Gripe</a></li>
+                                <li><a class="dropdown-item" href="#">Vacina Gripe</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

@@ -7,13 +7,13 @@
                     <div class="texto-visita">Estamos comprometidos com o bem-estar dos nossos idosos, oferecendo um serviço de agendamento para vacinação domiciliar.<br> Este serviço é especialmente destinado àqueles que possuem dificuldades de locomoção ou condições de saúde que impossibilitam a visita aos centros de vacinação.<br> O agendamento é simples e rápido, permitindo que nossos profissionais de saúde cheguem até você com todo o cuidado necessário.<br> Proteja a saúde dos seus entes queridos sem sair de casa. Agende agora e garanta a proteção contra doenças através da vacinação no conforto do seu lar.</div>
                 </div>
                 <div class="pt-5 text-center">
-                    <img style="width: 500px" src="./assets/visitaVacina.jpg" alt="">
+                    <img class="rounded img-fluid" src="./assets/visitaVacina.jpg" alt="">
                 </div>
             </div>
         </div>
         <div class="col-7" style="padding-left: 100px;">
             <div class="">
-                <form>
+                <form method="POST" action="">
                     <div class="mb-3">
                         <label for="municipio" class="form-label">Município</label>
                         <select class="form-select" id="municipio">
@@ -73,7 +73,7 @@
                     <div class="row mb-3">
                         <div class="col">
                             <label for="telefoneFixo" class="form-label">Telefone Fixo</label>
-                            <input type="text" name="telefone" id="telefoneFixo" class="form-control form-control-lg" required data-parsley-required-message="Preencha o seu telefone" inputmode="numeric" data-inputmask="'mask': '(99)99999-9999'">
+                            <input type="text" class="form-control" id="telefoneFixo" placeholder="(xx)xxxx-xxxx (Opcional)">
                         </div>
                         <div class="col">
                             <label for="celular" class="form-label">Celular</label>
@@ -88,5 +88,5 @@
         </div>
     </div>
 </div>
-</div>s
+</div>
 </div>

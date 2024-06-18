@@ -7,49 +7,50 @@ $naoTemSenha = !empty($senha);
 
 if ($naoTemLogin && $naoTemSenha) {
 
-    $sql = "SELECT `id`, `nome`, `login`, `senha` FROM `login` WHERE `login` = :login";
+    $sql = "SELECT `id`, `nome`, `login`, `senha` FROM `usuario` WHERE `login` = :login";
 
     $consulta = $pdo->prepare($sql);
     $consulta->bindParam(":login", $login);
     $consulta->execute();
     $dados = $consulta->fetch(PDO::FETCH_OBJ);
 
-    $IdNaoExiste = !isset($dados->id);
-    $senhaInvalida = !password_verify($senha, $dados->senha);
-    if ($IdNaoExiste) {
-        echo "Usuário não encontrado!";
-    } elseif ($senhaInvalida) {
-        echo ("Usuário ou senha incorretos!");
+    if (!$dados) {
+        echo "<script>mostrarToast('Usuário não encontrado!', 'bg-danger');</script>";
+    } elseif (!password_verify($senha, $dados->senha)) {
+        echo "<script>mostrarToast('Usuário não encontrado!', 'bg-danger');</script>";
+    } else {
+        $_SESSION["usuario"] = [
+            "nome" => $dados->nome,
+            "login" => $dados->login
+        ];
+        echo "<script>window.location.href='view/home'</script>";
+        exit;
     }
-    $_SESSION["usuario"] = [
-        "id" => $dados->id,
-        "nome" => $dados->nome,
-        "login" => $dados->login
-    ];
-    echo "<script>window.location.href='view/home'</script>";
-    exit;
 }
 
 ?>
 
 <div class="container-login">
-    <div class="card">
-        <h4 class="title">Login</h4>
+    <div class="card-l">
+        <h4 class="title-l">Login</h4>
         <form method="POST" action="">
-            <div class="field">
-                <svg class="input-icon" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M207.8 20.73c-93.45 18.32-168.7 93.66-187 187.1c-27.64 140.9 68.65 266.2 199.1 285.1c19.01 2.888 36.17-12.26 36.17-31.49l.0001-.6631c0-15.74-11.44-28.88-26.84-31.24c-84.35-12.98-149.2-86.13-149.2-174.2c0-102.9 88.61-185.5 193.4-175.4c91.54 8.869 158.6 91.25 158.6 183.2l0 16.16c0 22.09-17.94 40.05-40 40.05s-40.01-17.96-40.01-40.05v-120.1c0-8.847-7.161-16.02-16.01-16.02l-31.98 .0036c-7.299 0-13.2 4.992-15.12 11.68c-24.85-12.15-54.24-16.38-86.06-5.106c-38.75 13.73-68.12 48.91-73.72 89.64c-9.483 69.01 43.81 128 110.9 128c26.44 0 50.43-9.544 69.59-24.88c24 31.3 65.23 48.69 109.4 37.49C465.2 369.3 496 324.1 495.1 277.2V256.3C495.1 107.1 361.2-9.332 207.8 20.73zM239.1 304.3c-26.47 0-48-21.56-48-48.05s21.53-48.05 48-48.05s48 21.56 48 48.05S266.5 304.3 239.1 304.3z"></path>
+            <div class="field-l">
+                <svg class="input-icon-l" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"></path>
                 </svg>
-                <input autocomplete="off" id="logemail" placeholder="Nome" class="input-field" name="login" type="text">
+                <input autocomplete="off" id="logemail" placeholder="Usuário" class="input-field-l" name="login" type="text">
             </div>
-            <div class="field">
-                <svg class="input-icon" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <div class="field-l">
+                <svg class="input-icon-l" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
                     <path d="M80 192V144C80 64.47 144.5 0 224 0C303.5 0 368 64.47 368 144V192H384C419.3 192 448 220.7 448 256V448C448 483.3 419.3 512 384 512H64C28.65 512 0 483.3 0 448V256C0 220.7 28.65 192 64 192H80zM144 192H304V144C304 99.82 268.2 64 224 64C179.8 64 144 99.82 144 144V192z"></path>
                 </svg>
-                <input autocomplete="off" id="logpass" placeholder="Senha" class="input-field" name="password" type="password">
+                <input autocomplete="off" id="logpass" placeholder="Senha" class="input-field-l" name="password" type="password">
+                <button type="button" class="eye-btn" onclick="togglePassword()">
+                    <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                    <svg class="eye-icon eye-closed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.885 14.988l3.104-3.098.011.11c0 1.654-1.346 3-3 3l-.115-.012zm8.048-8.032l-3.274 3.268c.212.554.341 1.149.341 1.776 0 2.757-2.243 5-5 5-.631 0-1.229-.13-1.785-.344l-2.377 2.372c1.276.588 2.671.972 4.177.972 7.733 0 11.985-8.449 11.985-8.449s-1.415-2.478-4.067-4.595zm1.431-3.536l-18.619 18.58-1.382-1.422 3.455-3.447c-3.022-2.45-4.818-5.58-4.818-5.58s4.446-7.551 12.015-7.551c1.825 0 3.456.426 4.886 1.075l3.081-3.075 1.382 1.42zm-13.751 10.922l1.519-1.515c-.077-.264-.132-.538-.132-.827 0-1.654 1.346-3 3-3 .291 0 .567.055.833.134l1.518-1.515c-.704-.382-1.496-.619-2.351-.619-2.757 0-5 2.243-5 5 0 .852.235 1.641.613 2.342z"/></svg>
+                </button>
             </div>
-            <button class="btn" type="submit">Entrar</button>
-            <a href="" class="btn-link">Crie sua conta!</a>
+            <button class="btn-l" type="submit">Entrar</button>
         </form>
     </div>
 </div>

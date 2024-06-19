@@ -1,4 +1,4 @@
-<header class="bg-light">
+<header style="box-shadow: 0px 10px 15px 0px rgba(0,0,0,0.15);" class="bg-light">
     <div class="container d-flex justify-content-between">
         <div class="logo">
             <img style="width: 120px;" class="" src="./assets/logo.png" alt="">
@@ -21,7 +21,7 @@
                                     <div style="font-size: 18px; margin-right: 5px" class="">
                                         3
                                     </div>
-                                    <i style="color: #fff; font-size: 16px" class="bi bi-bell-fill"></i>
+                                    <i style="color: #fff; font-size: 16px" class="bi bi-bell-fill sino"></i>
 
                                 </span>
                             </a>

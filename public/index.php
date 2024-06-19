@@ -27,29 +27,24 @@ session_start();
 
 <body id="page-top">
     <?php
-
     require "functions.php";
-    if (!isset($_SESSION["usuario"])) {
-        require "view/login.php";
-    } else {
 
-        if (isset($_GET['param'])) {
-            $page = explode("/", $_GET['param']);
+    if (isset($_GET['param'])) {
+        $page = explode("/", $_GET['param']);
 
-            $pasta = $page[0] ?? NULL;
-            $arquivo = $page[1] ?? NULL;
-            $id = $page[2] ?? NULL;
-            $page = "$pasta/$arquivo";
+        $pasta = $page[0] ?? NULL;
+        $arquivo = $page[1] ?? NULL;
+        $id = $page[2] ?? NULL;
+        $page = "$pasta/$arquivo";
 
-            require("header.php");
+        require("header.php");
 
-            if (file_exists("$page.php")) {
-                require "$page.php";
-            } else {
-                require "view/error.php";
-            }
-            require "footer.php";
+        if (file_exists("$page.php")) {
+            require "$page.php";
+        } else {
+            require "view/error.php";
         }
+        require "footer.php";
     }
 
 
@@ -71,7 +66,6 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.9/jquery.inputmask.min.js" integrity="sha512-F5Ul1uuyFlGnIT1dk2c4kB4DBdi5wnBJjVhL7gQlGh46Xn0VhvD8kgxLtjdZ5YN83gybk/aASUAlpdoWUjRR3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript" src="../admin/js/sidebars.js"></script>
     <script type="text/javascript" src="../admin/js/script.js"></script>
 </body>
 

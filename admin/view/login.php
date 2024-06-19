@@ -2,10 +2,10 @@
 $login = $_POST["login"] ?? NULL;
 $senha = $_POST["password"] ?? NULL;
 
-$naoTemLogin = !empty($login);
-$naoTemSenha = !empty($senha);
+$loginNotFound = !empty($login);
+$senhaNotFound  = !empty($senha);
 
-if ($naoTemLogin && $naoTemSenha) {
+if ($loginNotFound && $senhaNotFound) {
 
     $sql = "SELECT `id`, `nome`, `login`, `senha` FROM `usuario` WHERE `login` = :login";
 
@@ -15,15 +15,15 @@ if ($naoTemLogin && $naoTemSenha) {
     $dados = $consulta->fetch(PDO::FETCH_OBJ);
 
     if (!$dados) {
-        echo "<script>mostrarToast('Usuário não encontrado!', 'bg-danger');</script>";
+        mensagemErro('Usuário não encontrado!');
     } elseif (!password_verify($senha, $dados->senha)) {
-        echo "<script>mostrarToast('Usuário não encontrado!', 'bg-danger');</script>";
+        mensagemErro('Usuário ou Senha Incorretos!');
     } else {
         $_SESSION["usuario"] = [
             "nome" => $dados->nome,
             "login" => $dados->login
         ];
-        echo "<script>window.location.href='view/home'</script>";
+        echo "<script>window.location.href='cadastro/idoso'</script>";
         exit;
     }
 }

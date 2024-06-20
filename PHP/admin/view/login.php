@@ -7,7 +7,7 @@ $senhaNotFound  = !empty($senha);
 
 if ($loginNotFound && $senhaNotFound) {
 
-    $sql = "SELECT `id`, `nome`, `login`, `senha` FROM `usuario` WHERE `login` = :login";
+    $sql = "SELECT `id`, `nome`, `username`, `password` FROM `agente-saude` WHERE `username` = :login";
 
     $consulta = $pdo->prepare($sql);
     $consulta->bindParam(":login", $login);
@@ -16,14 +16,14 @@ if ($loginNotFound && $senhaNotFound) {
 
     if (!$dados) {
         mensagemErro('Usuário não encontrado!');
-    } elseif (!password_verify($senha, $dados->senha)) {
+    } elseif (!password_verify($senha, $dados->password)) {
         mensagemErro('Usuário ou Senha Incorretos!');
     } else {
         $_SESSION["usuario"] = [
             "nome" => $dados->nome,
-            "login" => $dados->login
+            "login" => $dados->username
         ];
-        echo "<script>window.location.href='list/idoso'</script>";
+        echo "<script>window.location.href='list/vacina'</script>";
         exit;
     }
 }

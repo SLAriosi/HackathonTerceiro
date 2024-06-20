@@ -70,22 +70,24 @@
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT * FROM `vacina`";
+                        $url = 'http://localhost:3001/api/vacina';
 
-                        $consulta = $pdo->prepare($sql);
-                        $consulta->execute();
-                        $dados = $consulta->fetchAll(PDO::FETCH_OBJ);
-
-                        // Utilizado o foreach para selecionar os dados a serem exibidos
+                        $response = file_get_contents($url);
+                        if ($response === FALSE) {
+                            die('Erro ao obter dados da API');
+                        }
+                    
+                        $dados = json_decode($response, true);
+                    
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            die('Erro ao decodificar JSON');
+                        }
                         foreach ($dados as $dado) {
-                            // Formatando as datas para o formato dd/mm/yyyy
-                            $data_inicio = new DateTime($dado->data_inicio);
-                            $data_termino = new DateTime($dado->data_termino);
+                            $data_inicio = new DateTime($dado["data_campanha_inicio"]);
+                            $data_termino = new DateTime($dado["data_campanha_fim"]);
                         ?>
-                            <!-- Criação das TR -->
                             <tr>
-                                <!-- Exibindo os objetos dos dados -->
-                                <td><?= htmlspecialchars($dado->nome) ?></td>
+                                <td><?= htmlspecialchars($dado["nome"]) ?></td>
                                 <td><?= $data_inicio->format('d/m/Y') ?></td>
                                 <td><?= $data_termino->format('d/m/Y') ?></td>
                             </tr>

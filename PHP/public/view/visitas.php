@@ -17,59 +17,79 @@
             </div>
         </div>
         <div class="col-lg-7 col-md-12 mt-4 mt-lg-0 px-lg-5">
-            <form method="POST" action="">
+            <form method="POST" action="salvar/visitas.php">
                 <div class="mb-3">
-                    <label for="municipio" class="form-label">Vacinas</label>
-                    <select class="form-select" id="municipio">
+                    <label for="vacina" class="form-label">Vacinas</label>
+                    <select name="vacina" class="form-select" id="vacina">
                         <option selected>Selecione a vacina</option>
-                        <!-- Adicione as opções de municípios aqui -->
+                        <?php
+                        $url = 'http://localhost:3001/api/vacina';
+
+                        $response = file_get_contents($url);
+                        if ($response === FALSE) {
+                            die('Erro ao obter dados da API');
+                        }
+
+                        $dados = json_decode($response, true);
+
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            die('Erro ao decodificar JSON');
+                        }
+                        foreach ($dados as $dado) {
+                        ?>
+                            <option><?= $dado["nome"] ?></option>
+                        <?php
+                        }
+                        ?>
                     </select>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3 mb-md-0">
-                        <label for="dia" class="form-label">Escolha o dia</label>
+                        <label for="data" class="form-label">Escolha o dia</label>
                         <div class="input-group">
-                            <input type="date" class="form-control" id="dia">
+                            <input name="data" type="date" class="form-control" id="data">
                             <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label for="horario" class="form-label">Escolha o horário</label>
-                        <select class="form-select" id="horario">
+                        <select name="horario" class="form-select" id="horario">
                             <option selected>Escolha o horário</option>
                             <option>09:00</option>
-                            <option>12:00</option>
-                            <option>15:00</option>
-                            <!-- Adicione as opções de horários aqui -->
+                            <option>13:00</option>
+                            <option>16:00</option>
                         </select>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="nome" placeholder="Nome">
+                    <input name="nome" required type="text" class="form-control" id="nome" placeholder="Nome">
                 </div>
                 <div class="mb-3">
                     <label for="nomeResponsavel" class="form-label">Nome do Responsável</label>
-                    <input type="text" class="form-control" id="nomeResponsavel" placeholder="Nome do Responsável">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">E-mail</label>
-                    <input type="email" class="form-control" id="email" placeholder="E-mail">
+                    <input name="nomeResponsavel" type="text" class="form-control" id="nomeResponsavel" placeholder="Nome do Responsável">
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <label for="cpf" class="form-label">CPF</label>
-                        <input type="text" class="form-control" id="cpf" placeholder="999.999.999-99">
+                        <input name="cpf" required type="text" class="form-control" id="cpf" placeholder="999.999.999-99">
                     </div>
                     <div class="col-md-6">
                         <label for="dataNascimento" class="form-label">Data de Nascimento</label>
-                        <input type="text" class="form-control" id="dataNascimento" placeholder="dd/mm/aaaa">
+                        <input name="dataNascimento" required type="text" class="form-control" id="dataNascimento" placeholder="dd/mm/aaaa">
                     </div>
                 </div>
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <label for="telefone" class="form-label">Telefone</label>
-                    <input type="text" class="form-control" id="telefone" placeholder="(99)99999-9999">
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input name="telefone" required type="text" class="form-control" id="telefone" placeholder="(99)99999-9999">
+                    </div>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="cep" class="form-label">CEP</label>
+                        <input name="cep" required type="text" class="form-control" id="cep" placeholder="99999-999">
+                    </div>
                 </div>
+                
                 <div class="d-grid mt-3">
                     <button type="submit" class="btn btn-block btn-primary">Confirmar Agendamento</button>
                 </div>

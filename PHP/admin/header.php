@@ -7,8 +7,7 @@
         <nav class="navbar">
             <div class="container-fluid">
                 <div class="navbar-nav d-flex flex-row mx-3">
-                    <a class="nav-link mx-2 text-white" aria-current="page" href="list/idoso">Lista de idosos</a>
-                    <a class="nav-link mx-2 text-white" href="cadastro/vacina">Lista de vacinas</a>
+                    <a class="nav-link mx-2 text-white" href="list/vacina">Lista de vacinas</a>
                 </div>
                 <ul style="margin-bottom: 0; padding-left: 20px;" class="list-unstyled d-flex justify-content-center align-item-center bg-primary p-2 rounded">
                     <li class="nav-item dropdown">
@@ -21,7 +20,7 @@
                             <li><a class="dropdown-item text-danger" href="disconnect.php">Sair</a></li>
                         </ul>
                     </li>
-                    <div style="font-size: 15px; padding-top: 3px;" class="text-white px-2">Bem vindo, <?= $_SESSION["usuario"]["nome"] ?></div>
+                    <div style="font-size: 15px; padding-top: 3px;" class="text-white px-2">Bem vindo, <?= $_SESSION["usuario"]["login"] ?></div>
                 </ul>
 
             </div>

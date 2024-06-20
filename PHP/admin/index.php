@@ -1,5 +1,5 @@
 <?php
-require("../public/model/config.php");
+require("../admin/model/config.php");
 session_start();
 
 ?>

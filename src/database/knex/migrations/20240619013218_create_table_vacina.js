@@ -2,8 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
-   return knex.schema
+exports.up = async function(knex) {
+   await knex.schema
    .createTable("vacina", (table) => {
       table.bigIncrements("id");
       table.string("nome", 100).notNullable();
@@ -21,13 +21,9 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-   return knex.schema
-   .dropTable("vacina")
+exports.down = async function(knex) {
+   await knex.schema.dropTable("vacina")
    .then((result) => {
       console.log("Deletada tabela de Vacina");
    })
-   .catch((err) => {
-      console.log(err);
-   });
 };

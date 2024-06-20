@@ -2,15 +2,13 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function (knex) {
-   return knex.schema
+exports.up = async function (knex) {
+   await knex.schema
       .createTable("idoso", (table) => {
          table.bigIncrements("id");
          table.string("nome", 100).notNullable();
          table.string("telefone", 11).notNullable();
          table.date("data_nascimento").notNullable();
-         table.string("nome_responsavel", 100);
-         table.string("telefone_responsavel", 11);
          table.string("cpf", 11).notNullable();
          table.string("cep", 8).notNullable();
          table.integer("numero_casa").notNullable();
@@ -32,13 +30,10 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {
-   return knex.schema
+exports.down = async function (knex) {
+   await knex.schema
       .dropTable("idoso")
       .then((result) => {
          console.log("Deletada tabela de Idoso");
       })
-      .catch((err) => {
-         console.log(err);
-      });
 };

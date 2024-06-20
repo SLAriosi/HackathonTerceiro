@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "migrate:make": "knex migrate:make create_table_agendamento_vacina",
+    "migrate:make": "knex migrate:make create_table_agenda",
     "migrate:rollback": "knex migrate:rollback",
     "migrate": "knex migrate:latest",
     "test": "jest --watch"

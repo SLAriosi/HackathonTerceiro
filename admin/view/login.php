@@ -23,7 +23,7 @@ if ($loginNotFound && $senhaNotFound) {
             "nome" => $dados->nome,
             "login" => $dados->login
         ];
-        echo "<script>window.location.href='cadastro/idoso'</script>";
+        echo "<script>window.location.href='list/idoso'</script>";
         exit;
     }
 }

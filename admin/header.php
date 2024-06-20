@@ -1,14 +1,14 @@
 <header style="box-shadow: 0px 10px 15px 0px rgba(0,0,0,0.10);" class="bg-dark">
     <div class="container d-flex justify-content-between">
         <div class="logo d-flex align-items-center">
-            <img style="width: 120px;" class="" src="./assets/logo.png" alt="">
+            <a href="../public/view/campanha"><img style="width: 120px;" class="" src="./assets/logo.png" alt=""></a>
             <h3 style="margin-bottom: 0 !important;" class="text-white">Painel de Administração</h3>
         </div>
         <nav class="navbar">
             <div class="container-fluid">
                 <div class="navbar-nav d-flex flex-row mx-3">
-                    <a class="nav-link mx-2 text-white" aria-current="page" href="cadastro/idoso">Cadastro de Idoso</a>
-                    <a class="nav-link mx-2 text-white" href="cadastro/vacina">Cadastro de Vacina</a>
+                    <a class="nav-link mx-2 text-white" aria-current="page" href="list/idoso">Lista de idosos</a>
+                    <a class="nav-link mx-2 text-white" href="cadastro/vacina">Lista de vacinas</a>
                 </div>
                 <ul style="margin-bottom: 0; padding-left: 20px;" class="list-unstyled d-flex justify-content-center align-item-center bg-primary p-2 rounded">
                     <li class="nav-item dropdown">

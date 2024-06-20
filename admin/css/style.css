@@ -48,13 +48,6 @@
 header .dropdown-toggle::after {
     display: none;
 }
-.buttonSair svg path:hover {
-    transition: all ease-in-out 0.3s;
-    transform: translateY(-3px);
-}
-.sino:active {
-    transform: scale(0.8);
-}
 .container-login {
     background-color: #eeeeee;
     min-height: 100vh;

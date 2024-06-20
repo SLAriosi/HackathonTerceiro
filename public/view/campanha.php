@@ -1,3 +1,17 @@
+<section>
+    <div class="row banner">
+        <div style="background-color: rgba(0,0,0, 0.7);" class="col-12 d-flex justify-content-center align-items-center flex-column">
+            <h1 class="text-white">AlfaCare: Vacinação Domiciliar ao seu Alcance</h1><br>
+            <div class="w-50 text-white text-center fs-5">
+                
+
+                Seja bem-vindo à AlfaCare, sua opção em vacinação domiciliar. Com um compromisso sólido com a saúde e o bem-estar, oferecemos conveniência e segurança através de uma equipe especializada. Agende sua vacina conosco e garanta proteção com qualidade e conforto para você e sua família.
+            </div>
+        </div>
+    </div>
+</section>
+
+
 <div style="background-color: #0d6efd;
     background-image: linear-gradient(180deg, #0d6efd 0%, #5498ff 100%);">
     <div class="container py-5">

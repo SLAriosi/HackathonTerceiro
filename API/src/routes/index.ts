@@ -1,7 +1,6 @@
 import { Router } from "express";
-import * as vacinaController from "../controllers/vacinaController";
-import * as agendamentoController from "../controllers/agendamentoController";
-
+import * as vacinaController from "../controllers/vacinaController"
+import * as agendamentoController from "../controllers/agendamentoController"
 const routes = Router();
 
 routes.get("/vacina", vacinaController.getVacina);

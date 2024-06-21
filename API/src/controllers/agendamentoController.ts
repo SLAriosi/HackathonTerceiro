@@ -10,13 +10,10 @@ type Agendamentos = {
     nome: string,
     cpf: string,
     cep: string,
-    data_nascimento: Date,
     telefone: string,
 };
 
-const dateString = z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Data inválida",
-}).transform((val) => new Date(val));
+const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Data inválida" }).transform((val) => new Date(val));
 
 export const getAgendamento = async (req: Request, res: Response) => {
     const agendamento: Agendamentos = await knex("agendamento_vacina");
@@ -33,7 +30,6 @@ export const postAgendamento = async (req: Request, res: Response) => {
         nome: z.string({ required_error: "Nome é obrigatório" }),
         cpf: z.string().min(11, { message: "CPF deve ter pelo menos 11 dígitos" }).nonempty({ message: "CPF é obrigatório" }).max(11, { message: "CPF deve ter no máximo 11 dígitos" }),
         cep: z.string().min(8, { message: "CEP deve ter pelo menos 8 dígitos" }).regex(/^\d+$/, { message: "CEP deve conter apenas números" }).max(8, { message: "CEP deve ter no máximo 8 dígitos" }),
-        data_nascimento: dateString,
         telefone: z.string().min(11, { message: "Telefone deve ter pelo menos 11 caracteres" }).regex(/^\d+$/, { message: "Telefone deve conter apenas números" }).max(11, { message: "Telefone deve ter no máximo 11 dígitos" }),
     });
 
@@ -60,7 +56,6 @@ export const putAgendamento = async (req: Request, res: Response) => {
         nome: z.string({ required_error: "Nome é obrigatório" }),
         cpf: z.string().min(11, { message: "CPF deve ter pelo menos 11 dígitos" }).max(11, { message: "CPF deve ter no máximo 11 dígitos" }),
         cep: z.string().min(8, { message: "CEP deve ter pelo menos 8 dígitos" }).max(8, { message: "CEP deve ter no máximo 8 dígitos" }).regex(/^\d+$/, { message: "CEP deve conter apenas números" }),
-        data_nascimento: dateString,
         telefone: z.string().min(11, { message: "Telefone deve ter pelo menos 11 dígitos" }).max(11, { message: "Telefone deve ter no máximo 11 dígitos" }).regex(/^\d+$/, { message: "Telefone deve conter apenas números" }),
     });
 

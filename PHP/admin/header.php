@@ -7,7 +7,7 @@
         <nav class="navbar">
             <div class="d-flex">
                 <div class="navbar-nav d-flex flex-row mx-3">
-                    <a class="nav-link mx-2 text-white" href="list/vacina">Lista de vacinas</a>
+                    <a class="nav-link mx-2 text-white" href="list/vacina">Vacinas</a>
                 </div>
                 <ul style="margin-bottom: 0; padding-left: 20px; align-items: center;" class="list-unstyled d-flex justify-content-center align-items-center bg-primary p-2 rounded">
                     <li class="nav-item dropdown">

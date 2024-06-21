@@ -17,7 +17,7 @@ if ($loginNotFound && $senhaNotFound) {
     if (!$dados) {
         mensagemErro('Usuário não encontrado!');
     } elseif (!password_verify($senha, $dados->password)) {
-        mensagemErro('Usuário ou Senha Incorretos!');
+        mensagemErro('Usuário e/ou senha incorretos!');
     } else {
         $_SESSION["usuario"] = [
             "nome" => $dados->nome,

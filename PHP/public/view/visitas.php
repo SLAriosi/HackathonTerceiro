@@ -65,10 +65,6 @@
                     <label for="nome" class="form-label">Nome</label>
                     <input name="nome" required type="text" class="form-control" id="nome" placeholder="Nome">
                 </div>
-                <div class="mb-3">
-                    <label for="nomeResponsavel" class="form-label">Nome do Responsável</label>
-                    <input name="nomeResponsavel" type="text" class="form-control" id="nomeResponsavel" placeholder="Nome do Responsável">
-                </div>
                 <div class="row mb-3">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <label for="cpf" class="form-label">CPF</label>

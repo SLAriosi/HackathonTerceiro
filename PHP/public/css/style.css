@@ -212,6 +212,11 @@
         margin: 0% 3%;
     }
 }
+@media (max-width: 500px) {
+    .carousel-item {
+        height: 300px!important;
+    }
+}
 
 
 

@@ -10,7 +10,6 @@ dotenv.config();
 
 app.use(express.json()); 
 
-// Liberando acesso a API
 app.use(cors({
 	origin: '*'
 }));

@@ -2,7 +2,7 @@
     $host = "localhost";
     $user  = "root";
     $password = "";
-    $database  = "hackathon";
+    $database  = "alfacare";
 
     try {
         $pdo = new PDO("mysql:host={$host};dbname={$database};port=3306;charset=utf8;",$user,$password);

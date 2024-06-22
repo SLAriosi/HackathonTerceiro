@@ -2,18 +2,18 @@ import { Request, Response } from "express";
 import knex from "../database/knex";
 import AppError from "../utils/AppError";
 
-type Agente = {
-    nome: string;
-    username:string;
-    password: string;
+type Agentes = {
+        id: number;
+        nome: string;
+        username: string;
+        password: string;
 };
 
-
 export const getAgente = async (req: Request, res: Response) => {
-    const agente: Agente = await knex("agente-saude");
+    const agentes: Agentes[] = await knex("agente-saude");
 
-    if (!agente) {
-        throw new AppError("Nenhum agente cadastrada!");
+    if (agentes.length === 0) {
+        throw new AppError("Nenhum agente encontrado!");
     }
-    res.json(agente);
+    res.json(agentes);
 };

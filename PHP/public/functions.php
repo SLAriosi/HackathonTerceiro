@@ -25,7 +25,7 @@ function mensagemSucesso($msg)
     <script>
         Swal.fire({
             icon: 'success',
-            title: 'Enviado com sucesso!',
+            title: 'Sucesso!',
             text: '<?= $msg ?>',
         }).then((result) => {
             history.back();

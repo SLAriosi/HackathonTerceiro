@@ -37,7 +37,7 @@
                         }
                         foreach ($dados as $dado) {
                         ?>
-                            <option><?= $dado["nome"] ?></option>
+                            <option key="<?= $dado["id"] ?>"><?= $dado["nome"] ?></option>
                         <?php
                         }
                         ?>
@@ -70,22 +70,43 @@
                         <label for="cpf" class="form-label">CPF</label>
                         <input name="cpf" required type="text" class="form-control" id="cpf" placeholder="999.999.999-99">
                     </div>
-                    <div class="col-md-6">
-                        <label for="dataNascimento" class="form-label">Data de Nascimento</label>
-                        <input name="dataNascimento" required type="text" class="form-control" id="dataNascimento" placeholder="dd/mm/aaaa">
-                    </div>
-                </div>
-                <div class="row mb-3">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <label for="telefone" class="form-label">Telefone</label>
                         <input name="telefone" required type="text" class="form-control" id="telefone" placeholder="(99)99999-9999">
                     </div>
+                </div>
+                <div class="row mb-3">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <label for="cep" class="form-label">CEP</label>
                         <input name="cep" required type="text" class="form-control" id="cep" placeholder="99999-999">
                     </div>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="agente" class="form-label">Agente de Saúde</label>
+                        <select name="agente" class="form-select" id="agente">
+                            <option selected>Selecione a agente de saúde</option>
+                            <?php
+                            $url = 'http://localhost:3001/api/agente';
+
+                            $response = file_get_contents($url);
+                            if ($response === FALSE) {
+                                die('Erro ao obter dados da API');
+                            }
+
+                            $dados = json_decode($response, true);
+
+                            if (json_last_error() !== JSON_ERROR_NONE) {
+                                die('Erro ao decodificar JSON');
+                            }
+                            foreach ($dados as $dado) {
+                            ?>
+                                <option key="<?= $dado["id"] ?>"><?= $dado["nome"] ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
                 </div>
-                
+
                 <div class="d-grid mt-3">
                     <button type="submit" class="btn btn-block btn-primary">Confirmar Agendamento</button>
                 </div>

@@ -9,6 +9,7 @@
     top: 50%;
     right: 0;
     margin-right: 10px;
+    z-index: 999!important;
 }
 .banner {
     background-image: url("../assets/banner.png");

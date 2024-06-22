@@ -9,7 +9,7 @@
     </div>
     <div class="container d-flex justify-content-between">
         <div class="logo">
-            <img style="width: 120px;" class="" src="./assets/logo.png" alt="">
+            <a href="../admin/list/vacina"><img style="width: 120px;" class="logoPrincipal" src="./assets/logo.png" alt=""></a>
         </div>
         <nav class="navbar bg-light">
             <div class="container-fluid ">

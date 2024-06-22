@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     <div class="card mb-5">
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr>

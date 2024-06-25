@@ -1,6 +1,7 @@
 package dao;
 
 import model.AgenteSaude;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,9 +22,13 @@ public class AgenteSaudeDAO {
     }
 
     public void salvar(AgenteSaude agente) {
-        String sql = "INSERT INTO AgenteSaude (nome) VALUES (?)";
+        String sql = "INSERT INTO `agente-saude` (nome, username, password) VALUES (?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, agente.getNome());
+            ps.setString(2, agente.getUsername());
+            // Hashing the password before saving
+            String hashedPassword = BCrypt.hashpw(agente.getPassword(), BCrypt.gensalt());
+            ps.setString(3, hashedPassword);
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -35,13 +40,14 @@ public class AgenteSaudeDAO {
         }
     }
 
+
     public List<AgenteSaude> listarTodos() {
-        String sql = "SELECT * FROM AgenteSaude";
+        String sql = "SELECT * FROM `agente-saude`";
         List<AgenteSaude> agentes = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                AgenteSaude agente = new AgenteSaude(rs.getLong("id"), rs.getString("nome"));
+                AgenteSaude agente = new AgenteSaude(rs.getLong("id"), rs.getString("nome"), rs.getString("username"), rs.getString("password"));
                 agentes.add(agente);
             }
         } catch (SQLException e) {
@@ -50,14 +56,15 @@ public class AgenteSaudeDAO {
         return agentes;
     }
 
+
     public AgenteSaude buscarPorId(Long id) {
         AgenteSaude agente = null;
-        String sql = "SELECT * FROM AgenteSaude WHERE id = ?";
+        String sql = "SELECT * FROM `agente-saude` WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    agente = new AgenteSaude(rs.getLong("id"), rs.getString("nome"));
+                    agente = new AgenteSaude(rs.getLong("id"), rs.getString("nome"), rs.getString("username"), rs.getString("password"));
                 }
             }
         } catch (SQLException e) {
@@ -66,19 +73,26 @@ public class AgenteSaudeDAO {
         return agente;
     }
 
+
     public void atualizar(AgenteSaude agente) {
-        String sql = "UPDATE AgenteSaude SET nome = ? WHERE id = ?";
+        String sql = "UPDATE `agente-saude` SET nome = ?, username = ?, password = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, agente.getNome());
-            ps.setLong(2, agente.getId());
+            ps.setString(2, agente.getUsername());
+            // Hashing the password before updating
+            String hashedPassword = BCrypt.hashpw(agente.getPassword(), BCrypt.gensalt());
+            ps.setString(3, hashedPassword);
+            ps.setLong(4, agente.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar agente de saúde", e);
         }
     }
 
+
+
     public void deletar(Long id) {
-        String sql = "DELETE FROM AgenteSaude WHERE id = ?";
+        String sql = "DELETE FROM `agente-saude` WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.executeUpdate();
@@ -86,6 +100,7 @@ public class AgenteSaudeDAO {
             throw new RuntimeException("Erro ao deletar agente de saúde", e);
         }
     }
+
 
     public void fecharConexao() {
         if (connection != null) {

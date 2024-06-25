@@ -17,8 +17,8 @@ import java.util.List;
 public class CadastroIdoso extends JFrame {
     private IdosoService service;
     private JLabel labelId, labelNome, labelCPF, labelCEP, labelTelefone, labelNumeroCasa, labelCondicoes, labelDataNascimento;
-    private JTextField campoId, campoNome, campoCPF, campoCEP, campoNumeroCasa, campoCondicoes;
-    private JFormattedTextField campoTelefone, campoDataNascimento;
+    private JTextField campoId, campoNome, campoCEP, campoNumeroCasa, campoCondicoes;
+    private JFormattedTextField campoCPF, campoTelefone, campoDataNascimento;
     private JButton botaoSalvar, botaoCancelar, botaoExcluir;
     private JTable tabelaIdoso;
 
@@ -250,6 +250,21 @@ public class CadastroIdoso extends JFrame {
             return false;
         }
 
+        if (!isValidCPF(campoCPF.getText())) {
+            JOptionPane.showMessageDialog(this, "CPF deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!isValidCEP(campoCEP.getText())) {
+            JOptionPane.showMessageDialog(this, "CEP deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!isValidTelefone(campoTelefone.getText())) {
+            JOptionPane.showMessageDialog(this, "Telefone deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         try {
             DATE_FORMAT.parse(campoDataNascimento.getText());
         } catch (ParseException e) {
@@ -258,6 +273,18 @@ public class CadastroIdoso extends JFrame {
         }
 
         return true;
+    }
+
+    private boolean isValidCPF(String cpf) {
+        return cpf.replaceAll("[^0-9]", "").length() == 11;
+    }
+
+    private boolean isValidCEP(String cep) {
+        return cep.replaceAll("[^0-9]", "").length() == 8;
+    }
+
+    private boolean isValidTelefone(String telefone) {
+        return telefone.replaceAll("[^0-9]", "").length() == 10;
     }
 
     private void limparCampos() {
@@ -272,12 +299,15 @@ public class CadastroIdoso extends JFrame {
     }
 
     private Idoso construirIdoso() throws ParseException {
+        String cpfFormatado = campoCPF.getText().replaceAll("[^0-9]", "");
+        String cepFormatado = campoCEP.getText().replaceAll("[^0-9]", "");
+        String telefoneFormatado = campoTelefone.getText().replaceAll("[^0-9]", "");
         return campoId.getText().isEmpty()
                 ? new Idoso(
                 campoNome.getText(),
-                campoTelefone.getText(),
-                campoCEP.getText(),
-                campoCPF.getText(),
+                telefoneFormatado,
+                cepFormatado,
+                cpfFormatado,
                 campoNumeroCasa.getText(),
                 campoCondicoes.getText(),
                 DATE_FORMAT.parse(campoDataNascimento.getText())
@@ -285,9 +315,9 @@ public class CadastroIdoso extends JFrame {
                 : new Idoso(
                 Integer.parseInt(campoId.getText()),
                 campoNome.getText(),
-                campoTelefone.getText(),
-                campoCEP.getText(),
-                campoCPF.getText(),
+                telefoneFormatado,
+                cepFormatado,
+                cpfFormatado,
                 campoNumeroCasa.getText(),
                 campoCondicoes.getText(),
                 DATE_FORMAT.parse(campoDataNascimento.getText())

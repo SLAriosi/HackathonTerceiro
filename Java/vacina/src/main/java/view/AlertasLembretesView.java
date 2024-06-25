@@ -1,13 +1,26 @@
 package view;
 
+import dao.AgendaDAO;
+
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.List;
 
 public class AlertasLembretesView extends JFrame {
     private JTextArea alertasLembretesArea;
     private JButton botaoFechar;
+    private AgendaDAO agendaDAO;
 
     public AlertasLembretesView() {
+        try {
+            agendaDAO = new AgendaDAO();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         setTitle("Alertas e Lembretes");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -61,11 +74,16 @@ public class AlertasLembretesView extends JFrame {
     }
 
     private void loadAlertasLembretes() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Lembrete: Vacina de reforço em 01/07/2024\n");
-        sb.append("Alerta: Visita agendada para 25/06/2024\n\n");
-
-        alertasLembretesArea.setText(sb.toString());
+        try {
+            List<String> alertasLembretes = agendaDAO.listarAlertasLembretes();
+            StringBuilder sb = new StringBuilder();
+            for (String alertaLembrete : alertasLembretes) {
+                sb.append(alertaLembrete).append("\n");
+            }
+            alertasLembretesArea.setText(sb.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar alertas e lembretes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {

@@ -2,6 +2,7 @@ package view;
 
 import dao.HistoricoDAO;
 import model.Historico;
+import model.AgenteSaude;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,10 +14,11 @@ import java.util.List;
 
 public class HistoricoView extends JFrame {
     private final HistoricoDAO historicoDAO;
+    private JComboBox<AgenteSaude> comboBoxAgenteSaude;
 
-    private JLabel labelId, labelIdosoId, labelAgendaId, labelVacinaId;
-    private JTextField campoId, campoIdosoId, campoAgendaId, campoVacinaId;
-    private JButton botaoSalvar, botaoCancelar, botaoExcluir;
+    private JLabel labelId, labelIdosoId, labelAgendaId, labelVacinaId, labelSearch;
+    private JTextField campoId, campoAgendaId, campoVacinaId, campoSearch;
+    private JButton botaoSalvar, botaoCancelar, botaoExcluir, botaoBuscar;
     private JTable tabelaHistorico;
 
     public HistoricoView() throws SQLException {
@@ -31,8 +33,9 @@ public class HistoricoView extends JFrame {
         setLocationRelativeTo(null);
 
         carregarHistorico();
+        carregarAgenteSaude();
 
-        pack(); // Chamar pack() após configurar a interface
+        pack();
     }
 
     private void initComponents() {
@@ -40,8 +43,8 @@ public class HistoricoView extends JFrame {
         campoId = new JTextField(10);
         campoId.setEditable(false);
 
-        labelIdosoId = new JLabel("ID do Idoso:");
-        campoIdosoId = new JTextField(10);
+        labelIdosoId = new JLabel("Agente de Saúde:");
+        comboBoxAgenteSaude = new JComboBox<>();
 
         labelAgendaId = new JLabel("ID da Agenda:");
         campoAgendaId = new JTextField(10);
@@ -49,13 +52,17 @@ public class HistoricoView extends JFrame {
         labelVacinaId = new JLabel("ID da Vacina:");
         campoVacinaId = new JTextField(10);
 
+        labelSearch = new JLabel("Buscar:");
+        campoSearch = new JTextField(20);
+        botaoBuscar = new JButton("Buscar");
+
         botaoSalvar = new JButton("Salvar");
         botaoCancelar = new JButton("Cancelar");
         botaoExcluir = new JButton("Excluir");
 
         tabelaHistorico = new JTable(new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"ID", "ID do Idoso", "ID da Agenda", "ID da Vacina"}
+                new String[]{"ID", "Agente de Saúde", "ID da Agenda", "ID da Vacina"}
         ));
     }
 
@@ -87,7 +94,7 @@ public class HistoricoView extends JFrame {
         painelFormulario.add(campoId, constraints);
 
         constraints.gridy = 1;
-        painelFormulario.add(campoIdosoId, constraints);
+        painelFormulario.add(comboBoxAgenteSaude, constraints);
 
         constraints.gridy = 2;
         painelFormulario.add(campoAgendaId, constraints);
@@ -104,14 +111,20 @@ public class HistoricoView extends JFrame {
         painelTabela.setBorder(BorderFactory.createTitledBorder("Histórico de Vacinação"));
         painelTabela.add(new JScrollPane(tabelaHistorico), BorderLayout.CENTER);
 
+        JPanel painelBusca = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelBusca.add(labelSearch);
+        painelBusca.add(campoSearch);
+        painelBusca.add(botaoBuscar);
+
         painelPrincipal.add(painelFormulario, BorderLayout.NORTH);
         painelPrincipal.add(painelBotoes, BorderLayout.SOUTH);
         painelPrincipal.add(painelTabela, BorderLayout.CENTER);
+        painelPrincipal.add(painelBusca, BorderLayout.NORTH);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(painelPrincipal, BorderLayout.CENTER);
 
-        setMinimumSize(new Dimension(600, 400)); // Definir tamanho mínimo da janela
+        setMinimumSize(new Dimension(600, 400));
     }
 
     private void setupListeners() {
@@ -135,6 +148,13 @@ public class HistoricoView extends JFrame {
                 deletarHistorico();
             }
         });
+
+        botaoBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buscarHistorico();
+            }
+        });
     }
 
     private void carregarHistorico() {
@@ -145,7 +165,7 @@ public class HistoricoView extends JFrame {
             for (Historico historico : historicos) {
                 model.addRow(new Object[]{
                         historico.getId(),
-                        historico.getIdosoId(),
+                        historico.getAgenteSaude().getNome(),
                         historico.getAgendaId(),
                         historico.getVacinaId()
                 });
@@ -155,13 +175,25 @@ public class HistoricoView extends JFrame {
         }
     }
 
+    private void carregarAgenteSaude() {
+        try {
+            List<AgenteSaude> agentes = historicoDAO.listarAgentesSaude();
+            comboBoxAgenteSaude.removeAllItems();
+            for (AgenteSaude agente : agentes) {
+                comboBoxAgenteSaude.addItem(agente);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar agentes de saúde: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void salvarOuAtualizarHistorico() {
         int id = campoId.getText().isEmpty() ? 0 : Integer.parseInt(campoId.getText());
-        int idosoId = Integer.parseInt(campoIdosoId.getText());
+        AgenteSaude agenteSaude = (AgenteSaude) comboBoxAgenteSaude.getSelectedItem();
         int agendaId = Integer.parseInt(campoAgendaId.getText());
         int vacinaId = Integer.parseInt(campoVacinaId.getText());
 
-        Historico historico = new Historico(id, idosoId, agendaId, vacinaId);
+        Historico historico = new Historico(id, agenteSaude.getId(), agendaId, vacinaId);
 
         try {
             if (id == 0) {
@@ -179,7 +211,7 @@ public class HistoricoView extends JFrame {
     private void deletarHistorico() {
         long id = Long.parseLong(campoId.getText());
         try {
-            historicoDAO.excluir(id); // Alterado para chamar excluir(Long id)
+            historicoDAO.excluir(id);
             limparCampos();
             carregarHistorico();
         } catch (SQLException e) {
@@ -187,11 +219,31 @@ public class HistoricoView extends JFrame {
         }
     }
 
+    private void buscarHistorico() {
+        String query = campoSearch.getText();
+        try {
+            List<Historico> historicos = historicoDAO.buscar(query);
+            DefaultTableModel model = (DefaultTableModel) tabelaHistorico.getModel();
+            model.setRowCount(0);
+            for (Historico historico : historicos) {
+                model.addRow(new Object[]{
+                        historico.getId(),
+                        historico.getAgenteSaude().getNome(),
+                        historico.getAgendaId(),
+                        historico.getVacinaId()
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao buscar histórico: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void limparCampos() {
         campoId.setText("");
-        campoIdosoId.setText("");
+        comboBoxAgenteSaude.setSelectedIndex(0);
         campoAgendaId.setText("");
         campoVacinaId.setText("");
+        campoSearch.setText("");
     }
 
     public static void main(String[] args) {

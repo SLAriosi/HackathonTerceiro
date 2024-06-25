@@ -4,8 +4,6 @@ import model.Idoso;
 import service.IdosoService;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -15,140 +13,103 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class CadastroIdoso extends JFrame {
-    private IdosoService service;
-    private JLabel labelId, labelNome, labelCPF, labelCEP, labelTelefone, labelNumeroCasa, labelCondicoes, labelDataNascimento;
-    private JTextField campoId, campoNome, campoCEP, campoNumeroCasa, campoCondicoes;
-    private JFormattedTextField campoCPF, campoTelefone, campoDataNascimento;
-    private JButton botaoSalvar, botaoCancelar, botaoExcluir;
-    private JTable tabelaIdoso;
+    private IdosoService idosoService;
+
+    private JTextField campoId, campoNome, campoNumeroCasa, campoCondicoes, campoDataNascimento;
+    private JFormattedTextField campoCPF, campoCEP, campoTelefone;
+    private JButton botaoSalvar, botaoCancelar, botaoExcluir, botaoListarTodos, botaoBuscarCPF;
+    private JTable tabelaIdosos;
+    private DefaultTableModel modeloTabela;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     public CadastroIdoso() throws SQLException {
-        service = new IdosoService();
+        idosoService = new IdosoService();
 
         initComponents();
-        setupLayout();
         setupListeners();
 
-        setSize(900, 600);
+        setSize(1000, 600);
         setTitle("Cadastro de Idosos");
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        carregarDados();
+        carregarDados(); // Carrega os dados iniciais na tabela
     }
 
     private void initComponents() {
-        labelId = new JLabel("ID:");
+        JPanel painelFormulario = new JPanel(new GridLayout(9, 2, 10, 10));
+        painelFormulario.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        painelFormulario.add(new JLabel("ID:"));
         campoId = new JTextField(10);
         campoId.setEnabled(false);
+        campoId.setEditable(false); // Torna o campo não editável
+        painelFormulario.add(campoId);
 
-        labelNome = new JLabel("Nome Completo:");
-        campoNome = new JTextField(30);
+        painelFormulario.add(new JLabel("Nome Completo:"));
+        campoNome = new JTextField();
+        painelFormulario.add(campoNome);
 
-        labelCPF = new JLabel("CPF:");
+        painelFormulario.add(new JLabel("CPF:"));
         campoCPF = new JFormattedTextField(createFormatter("###.###.###-##"));
+        campoCPF.setPreferredSize(new Dimension(150, 30));
+        painelFormulario.add(campoCPF);
 
-        labelCEP = new JLabel("CEP:");
+        painelFormulario.add(new JLabel("CEP:"));
         campoCEP = new JFormattedTextField(createFormatter("#####-###"));
+        campoCEP.setPreferredSize(new Dimension(150, 30));
+        painelFormulario.add(campoCEP);
 
-        labelTelefone = new JLabel("Telefone:");
-        campoTelefone = new JFormattedTextField(createFormatter("(##) ####-####"));
+        painelFormulario.add(new JLabel("Telefone:"));
+        campoTelefone = new JFormattedTextField(createFormatter("(##) #####-####"));
+        campoTelefone.setPreferredSize(new Dimension(150, 30));
+        painelFormulario.add(campoTelefone);
 
-        labelNumeroCasa = new JLabel("Número da Casa:");
+        painelFormulario.add(new JLabel("Número da Casa:"));
         campoNumeroCasa = new JTextField(15);
+        painelFormulario.add(campoNumeroCasa);
 
-        labelCondicoes = new JLabel("Condições de Saúde:");
-        campoCondicoes = new JTextField(30);
+        painelFormulario.add(new JLabel("Condições de Saúde:"));
+        campoCondicoes = new JTextField();
+        painelFormulario.add(campoCondicoes);
 
-        labelDataNascimento = new JLabel("Data de Nascimento:");
-        campoDataNascimento = new JFormattedTextField(createFormatter("##/##/####"));
+        painelFormulario.add(new JLabel("Data de Nascimento:"));
+        campoDataNascimento = new JTextField();
+        campoDataNascimento.setPreferredSize(new Dimension(150, 30));
+        painelFormulario.add(campoDataNascimento);
 
+        botaoBuscarCPF = new JButton("Buscar");
+
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         botaoCancelar = new JButton("Cancelar");
         botaoSalvar = new JButton("Salvar");
         botaoExcluir = new JButton("Excluir");
-
-        tabelaIdoso = new JTable(new DefaultTableModel(
-                new Object[][]{},
-                new String[]{"ID", "Nome", "CPF", "CEP", "Telefone", "Número da Casa", "Condições de Saúde", "Data de Nascimento"}
-        ));
-    }
-
-    private void setupLayout() {
-        JPanel painelEntrada = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.insets = new Insets(5, 5, 5, 5);
-        constraints.anchor = GridBagConstraints.WEST;
-
-        // Primeira coluna
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        painelEntrada.add(labelId, constraints);
-
-        constraints.gridy = 1;
-        painelEntrada.add(labelNome, constraints);
-
-        constraints.gridy = 2;
-        painelEntrada.add(labelCPF, constraints);
-
-        constraints.gridy = 3;
-        painelEntrada.add(labelCEP, constraints);
-
-        constraints.gridy = 4;
-        painelEntrada.add(labelTelefone, constraints);
-
-        constraints.gridy = 5;
-        painelEntrada.add(labelNumeroCasa, constraints);
-
-        constraints.gridy = 6;
-        painelEntrada.add(labelCondicoes, constraints);
-
-        constraints.gridy = 7;
-        painelEntrada.add(labelDataNascimento, constraints);
-
-        // Segunda coluna
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        painelEntrada.add(campoId, constraints);
-
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        painelEntrada.add(campoNome, constraints);
-
-        constraints.gridy = 2;
-        painelEntrada.add(campoCPF, constraints);
-
-        constraints.gridy = 3;
-        painelEntrada.add(campoCEP, constraints);
-
-        constraints.gridy = 4;
-        painelEntrada.add(campoTelefone, constraints);
-
-        constraints.gridy = 5;
-        constraints.gridwidth = 1;
-        painelEntrada.add(campoNumeroCasa, constraints);
-
-        constraints.gridy = 6;
-        constraints.gridwidth = 2;
-        painelEntrada.add(campoCondicoes, constraints);
-
-        constraints.gridy = 7;
-        constraints.gridwidth = 1;
-        painelEntrada.add(campoDataNascimento, constraints);
-
-        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        botaoListarTodos = new JButton("Listar Todos");
         painelBotoes.add(botaoCancelar);
         painelBotoes.add(botaoSalvar);
         painelBotoes.add(botaoExcluir);
+        painelBotoes.add(botaoListarTodos);
+        painelBotoes.add(botaoBuscarCPF);
 
-        JPanel painelSaida = new JPanel(new BorderLayout());
-        painelSaida.add(new JScrollPane(tabelaIdoso), BorderLayout.CENTER);
+        modeloTabela = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"ID", "Nome", "CPF", "CEP", "Telefone", "Número Casa", "Condições", "Data Nascimento"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Define que a coluna 0 (ID) não é editável
+                return column != 0;
+            }
+        };
+        tabelaIdosos = new JTable(modeloTabela);
+        JScrollPane scrollPane = new JScrollPane(tabelaIdosos);
+        scrollPane.setPreferredSize(new Dimension(800, 300));
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(painelEntrada, BorderLayout.NORTH);
+        getContentPane().add(painelFormulario, BorderLayout.WEST);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
         getContentPane().add(painelBotoes, BorderLayout.SOUTH);
-        getContentPane().add(painelSaida, BorderLayout.CENTER);
     }
 
     private void setupListeners() {
@@ -159,189 +120,165 @@ public class CadastroIdoso extends JFrame {
             }
         });
         botaoExcluir.addActionListener(e -> deletarIdoso());
+        botaoListarTodos.addActionListener(e -> carregarDados());
+        botaoBuscarCPF.addActionListener(e -> buscarIdosoPorCPF());
 
-        tabelaIdoso.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                selecionarIdoso(e);
+        tabelaIdosos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = tabelaIdosos.getSelectedRow();
+                if (selectedRow != -1) {
+                    mostrarDetalhesIdoso(selectedRow);
+                }
             }
         });
     }
 
-    private void selecionarIdoso(ListSelectionEvent e) {
-        if (!e.getValueIsAdjusting()) {
-            int selectedRow = tabelaIdoso.getSelectedRow();
-            if (selectedRow != -1) {
-                campoId.setText(tabelaIdoso.getValueAt(selectedRow, 0).toString());
-                campoNome.setText((String) tabelaIdoso.getValueAt(selectedRow, 1));
-                campoCPF.setText((String) tabelaIdoso.getValueAt(selectedRow, 2));
-                campoCEP.setText((String) tabelaIdoso.getValueAt(selectedRow, 3));
-                campoTelefone.setText((String) tabelaIdoso.getValueAt(selectedRow, 4));
-                campoNumeroCasa.setText((String) tabelaIdoso.getValueAt(selectedRow, 5));
-                campoCondicoes.setText((String) tabelaIdoso.getValueAt(selectedRow, 6));
-                campoDataNascimento.setText((String) tabelaIdoso.getValueAt(selectedRow, 7));
-
-                // Habilita o botão de excluir ao selecionar um idoso na tabela
-                botaoExcluir.setEnabled(true);
-            }
-        }
-    }
-
     private void carregarDados() {
         try {
-            List<Idoso> idosos = service.findAll();
-            DefaultTableModel model = (DefaultTableModel) tabelaIdoso.getModel();
-            model.setRowCount(0);
+            modeloTabela.setRowCount(0); // Limpa a tabela
+            List<Idoso> idosos = idosoService.findAll();
             for (Idoso idoso : idosos) {
-                model.addRow(new Object[]{
+                Object[] linha = {
                         idoso.getId(),
                         idoso.getNome(),
                         idoso.getCpf(),
                         idoso.getCep(),
                         idoso.getTelefone(),
-                        idoso.getNumero_casa(),
+                        idoso.getNumeroCasa(),
                         idoso.getCondicoes(),
                         DATE_FORMAT.format(idoso.getDataNascimento())
-                });
+                };
+                modeloTabela.addRow(linha);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao carregar dados dos idosos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void buscarIdosoPorCPF() {
+        String cpf = campoCPF.getText().replaceAll("[^0-9]", ""); // Remove caracteres não numéricos
+        if (!cpf.isEmpty()) {
+            try {
+                Idoso idoso = idosoService.buscarPorCPF(cpf);
+                if (idoso != null) {
+                    modeloTabela.setRowCount(0); // Limpa a tabela
+                    Object[] linha = {
+                            idoso.getId(),
+                            idoso.getNome(),
+                            idoso.getCpf(),
+                            idoso.getCep(),
+                            idoso.getTelefone(),
+                            idoso.getNumeroCasa(),
+                            idoso.getCondicoes(),
+                            DATE_FORMAT.format(idoso.getDataNascimento())
+                    };
+                    modeloTabela.addRow(linha);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum idoso encontrado com o CPF informado.", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Erro ao buscar idoso por CPF: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, informe um CPF válido.", "Aviso", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void salvarOuAtualizarIdoso() {
         try {
             Idoso idoso = construirIdoso();
-            if (campoId.getText().isEmpty()) {
-                service.salvarIdoso(idoso);
-            } else {
+            if (campoId.getText().isEmpty()) { // Novo idoso (inserir)
+                idosoService.salvarIdoso(idoso);
+            } else { // Atualizar idoso
                 idoso.setId(Integer.parseInt(campoId.getText()));
-                service.atualizarIdoso(idoso);
+                idosoService.atualizarIdoso(idoso);
             }
             limparCampos();
             carregarDados();
         } catch (SQLException | ParseException ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar ou atualizar Idoso: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao salvar ou atualizar idoso: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void deletarIdoso() {
         try {
             int id = Integer.parseInt(campoId.getText());
-            service.deletar(id);
-            limparCampos();
-            carregarDados();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao deletar Idoso: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Selecione um idoso para excluir.", "Erro", JOptionPane.ERROR_MESSAGE);
+            int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este idoso?", "Confirmação", JOptionPane.YES_NO_OPTION);
+            if (confirmacao == JOptionPane.YES_OPTION) {
+                idosoService.deletar(id);
+                limparCampos();
+                carregarDados();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao excluir idoso: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private boolean validarCampos() {
-        if (campoNome.getText().isEmpty() ||
-                campoCPF.getText().isEmpty() ||
-                campoCEP.getText().isEmpty() ||
-                campoTelefone.getText().isEmpty() ||
-                campoNumeroCasa.getText().isEmpty() ||
-                campoCondicoes.getText().isEmpty() ||
-                campoDataNascimento.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return false;
+    private void mostrarDetalhesIdoso(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < tabelaIdosos.getRowCount()) {
+            campoId.setText(modeloTabela.getValueAt(rowIndex, 0).toString());
+            campoNome.setText(modeloTabela.getValueAt(rowIndex, 1).toString());
+            campoCPF.setText(modeloTabela.getValueAt(rowIndex, 2).toString());
+            campoCEP.setText(modeloTabela.getValueAt(rowIndex, 3).toString());
+            campoTelefone.setText(modeloTabela.getValueAt(rowIndex, 4).toString());
+            campoNumeroCasa.setText(modeloTabela.getValueAt(rowIndex, 5).toString());
+            campoCondicoes.setText(modeloTabela.getValueAt(rowIndex, 6).toString());
+
+            String dataString = modeloTabela.getValueAt(rowIndex, 7).toString();
+            campoDataNascimento.setText(dataString); // Define a data no campo de texto
         }
-
-        if (!isValidCPF(campoCPF.getText())) {
-            JOptionPane.showMessageDialog(this, "CPF deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        if (!isValidCEP(campoCEP.getText())) {
-            JOptionPane.showMessageDialog(this, "CEP deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        if (!isValidTelefone(campoTelefone.getText())) {
-            JOptionPane.showMessageDialog(this, "Telefone deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        try {
-            DATE_FORMAT.parse(campoDataNascimento.getText());
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Data de Nascimento deve estar no formato dd/MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean isValidCPF(String cpf) {
-        return cpf.replaceAll("[^0-9]", "").length() == 11;
-    }
-
-    private boolean isValidCEP(String cep) {
-        return cep.replaceAll("[^0-9]", "").length() == 8;
-    }
-
-    private boolean isValidTelefone(String telefone) {
-        return telefone.replaceAll("[^0-9]", "").length() == 10;
-    }
-
-    private void limparCampos() {
-        campoId.setText("");
-        campoNome.setText("");
-        campoCPF.setText("");
-        campoCEP.setText("");
-        campoTelefone.setValue(null); // Limpa o valor formatado do campo de telefone
-        campoNumeroCasa.setText("");
-        campoCondicoes.setText("");
-        campoDataNascimento.setValue(null);
     }
 
     private Idoso construirIdoso() throws ParseException {
-        String cpfFormatado = campoCPF.getText().replaceAll("[^0-9]", "");
-        String cepFormatado = campoCEP.getText().replaceAll("[^0-9]", "");
-        String telefoneFormatado = campoTelefone.getText().replaceAll("[^0-9]", "");
-        return campoId.getText().isEmpty()
-                ? new Idoso(
-                campoNome.getText(),
-                telefoneFormatado,
-                cepFormatado,
-                cpfFormatado,
-                campoNumeroCasa.getText(),
-                campoCondicoes.getText(),
-                DATE_FORMAT.parse(campoDataNascimento.getText())
-        )
-                : new Idoso(
-                Integer.parseInt(campoId.getText()),
-                campoNome.getText(),
-                telefoneFormatado,
-                cepFormatado,
-                cpfFormatado,
-                campoNumeroCasa.getText(),
-                campoCondicoes.getText(),
-                DATE_FORMAT.parse(campoDataNascimento.getText())
-        );
+        String nome = campoNome.getText();
+        String cpf = campoCPF.getText().replaceAll("[^0-9]", "");
+        String cep = campoCEP.getText().replaceAll("[^0-9]", "");
+        String telefone = campoTelefone.getText().replaceAll("[^0-9]", "");
+        String numeroCasa = campoNumeroCasa.getText();
+        String condicoes = campoCondicoes.getText();
+        java.util.Date dataNascimento = DATE_FORMAT.parse(campoDataNascimento.getText());
+
+        return new Idoso(nome, cpf, cep, telefone, numeroCasa, condicoes, new java.sql.Date(dataNascimento.getTime()));
     }
 
-    private MaskFormatter createFormatter(String s) {
+    private MaskFormatter createFormatter(String pattern) {
         MaskFormatter formatter = null;
         try {
-            formatter = new MaskFormatter(s);
+            formatter = new MaskFormatter(pattern);
             formatter.setPlaceholderCharacter('_');
-        } catch (java.text.ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return formatter;
     }
 
+    private boolean validarCampos() {
+        if (campoNome.getText().isEmpty() || campoCPF.getText().replaceAll("[^0-9]", "").isEmpty() ||
+                campoCEP.getText().replaceAll("[^0-9]", "").isEmpty() || campoTelefone.getText().replaceAll("[^0-9]", "").isEmpty() ||
+                campoNumeroCasa.getText().isEmpty() || campoCondicoes.getText().isEmpty() || campoDataNascimento.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void limparCampos() {
+        campoId.setText("");
+        campoNome.setText("");
+        campoCPF.setValue(null);
+        campoCEP.setValue(null);
+        campoTelefone.setValue(null);
+        campoNumeroCasa.setText("");
+        campoCondicoes.setText("");
+        campoDataNascimento.setText("");
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 new CadastroIdoso().setVisible(true);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Erro ao iniciar a aplicação: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

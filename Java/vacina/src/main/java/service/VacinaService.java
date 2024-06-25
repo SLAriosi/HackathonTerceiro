@@ -4,7 +4,6 @@ import dao.VacinaDAO;
 import model.Vacina;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 public class VacinaService {
@@ -33,5 +32,12 @@ public class VacinaService {
 
     public void fecharConexao() {
         dao.fecharConexao();
+    }
+
+    // Método para adicionar uma nova vacina
+    public void adicionarVacina(String nome) throws SQLException {
+        Vacina novaVacina = new Vacina();
+        novaVacina.setNome(nome);
+        dao.inserir(novaVacina);
     }
 }

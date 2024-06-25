@@ -90,7 +90,7 @@ public class CadastroAgente extends JFrame {
                         return;
                     }
 
-                    AgenteSaude agente = new AgenteSaude(null, nome, username, password); // Utilizando senha em texto simples
+                    AgenteSaude agente = new AgenteSaude(null, nome, username, password);
                     agenteSaudeService.save(agente);
 
                     JOptionPane.showMessageDialog(null, "Agente de Saúde salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -101,6 +101,7 @@ public class CadastroAgente extends JFrame {
             }
         });
     }
+
 
     private void clearFields() {
         nomeField.setText("");

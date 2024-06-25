@@ -4,12 +4,12 @@ import model.Agenda;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AgendaDAO {
-
     private final Connection connection;
 
     public AgendaDAO() throws SQLException {
@@ -23,159 +23,119 @@ public class AgendaDAO {
     }
 
     public void inserir(Agenda agenda) throws SQLException {
-        String sql = "INSERT INTO agenda (data, horario, agente-saude_id, vacina, nome, cpf, cep, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO agenda (data, horario, `agente-saude_id`, vacina, nome, cpf, cep, telefone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setObject(1, agenda.getData());
-            stmt.setObject(2, agenda.getHorario());
-            stmt.setLong(3, agenda.getAgenteSaudeId());
-            stmt.setString(4, agenda.getVacina());
-            stmt.setString(5, agenda.getNome());
-            stmt.setString(6, agenda.getCpf());
-            stmt.setString(7, agenda.getCep());
-            stmt.setString(8, agenda.getTelefone());
+            preencherStatement(stmt, agenda);
             stmt.executeUpdate();
         }
     }
 
     public void atualizar(Agenda agenda) throws SQLException {
-        String sql = "UPDATE agenda SET data = ?, horario = ?, agente-saude_id = ?, vacina = ?, nome = ?, cpf = ?, cep = ?, telefone = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setObject(1, agenda.getData());
-            ps.setObject(2, agenda.getHorario());
-            ps.setLong(3, agenda.getAgenteSaudeId());
-            ps.setString(4, agenda.getVacina());
-            ps.setString(5, agenda.getNome());
-            ps.setString(6, agenda.getCpf());
-            ps.setString(7, agenda.getCep());
-            ps.setString(8, agenda.getTelefone());
-            ps.setLong(9, agenda.getId());
-            ps.execute();
+        String sql = "UPDATE agenda SET data = ?, horario = ?, `agente-saude_id` = ?, vacina = ?, nome = ?, cpf = ?, cep = ?, telefone = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            preencherStatement(stmt, agenda);
+            stmt.setLong(10, agenda.getId());
+            stmt.executeUpdate();
         }
     }
 
     public void excluir(Long id) throws SQLException {
         String sql = "DELETE FROM agenda WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            ps.execute();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
         }
     }
 
     public List<Agenda> listarTodos() throws SQLException {
         List<Agenda> agendas = new ArrayList<>();
         String sql = "SELECT * FROM agenda";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                LocalDate data = rs.getObject("data", LocalDate.class);
-                LocalTime horario = rs.getObject("horario", LocalTime.class);
-                long agenteSaudeId = rs.getLong("agente-saude_id");
-                String vacina = rs.getString("vacina");
-                String nome = rs.getString("nome");
-                String cpf = rs.getString("cpf");
-                String cep = rs.getString("cep");
-                String telefone = rs.getString("telefone");
-                agendas.add(new Agenda(
-                        rs.getLong("id"),
-                        data,
-                        horario,
-                        agenteSaudeId,
-                        vacina,
-                        nome,
-                        cpf,
-                        cep,
-                        telefone
-                ));
+                agendas.add(criarAgenda(rs));
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
-
         return agendas;
     }
 
-    public Agenda buscarPorId(Long id) throws SQLException {
-        Agenda agenda = null;
-        String sql = "SELECT * FROM agenda WHERE id = ?";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    LocalDate data = rs.getObject("data", LocalDate.class);
-                    LocalTime horario = rs.getObject("horario", LocalTime.class);
-                    long agenteSaudeId = rs.getLong("agente-saude_id");
-                    String vacina = rs.getString("vacina");
-                    String nome = rs.getString("nome");
-                    String cpf = rs.getString("cpf");
-                    String cep = rs.getString("cep");
-                    String telefone = rs.getString("telefone");
-                    agenda = new Agenda(
-                            rs.getLong("id"),
-                            data,
-                            horario,
-                            agenteSaudeId,
-                            vacina,
-                            nome,
-                            cpf,
-                            cep,
-                            telefone
-                    );
-                }
+    public List<String> listarNomesAgentes() throws SQLException {
+        List<String> nomesAgentes = new ArrayList<>();
+        String sql = "SELECT nome FROM `agente-saude`";  // Use crases (`) ao redor do nome da tabela
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                nomesAgentes.add(rs.getString("nome"));
             }
         }
-
-        return agenda;
+        return nomesAgentes;
     }
 
-    public List<Agenda> pesquisar(String termo) throws SQLException {
+
+    public List<Agenda> buscarPorCPF(String cpf) throws SQLException {
         List<Agenda> agendas = new ArrayList<>();
-        String sql = "SELECT * FROM agenda WHERE vacina LIKE ? OR nome LIKE ? OR cpf LIKE ? OR cep LIKE ? OR telefone LIKE ?";
+        String sql = "SELECT * FROM agenda WHERE cpf = ?";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            String searchTerm = "%" + termo + "%";
-            stmt.setString(1, searchTerm);
-            stmt.setString(2, searchTerm);
-            stmt.setString(3, searchTerm);
-            stmt.setString(4, searchTerm);
-            stmt.setString(5, searchTerm);
+            stmt.setString(1, cpf);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    LocalDate data = rs.getObject("data", LocalDate.class);
-                    LocalTime horario = rs.getObject("horario", LocalTime.class);
-                    long agenteSaudeId = rs.getLong("agente-saude_id");
-                    String vacina = rs.getString("vacina");
-                    String nome = rs.getString("nome");
-                    String cpf = rs.getString("cpf");
-                    String cep = rs.getString("cep");
-                    String telefone = rs.getString("telefone");
-                    agendas.add(new Agenda(
-                            rs.getLong("id"),
-                            data,
-                            horario,
-                            agenteSaudeId,
-                            vacina,
-                            nome,
-                            cpf,
-                            cep,
-                            telefone
-                    ));
+                    agendas.add(criarAgenda(rs));
                 }
             }
         }
         return agendas;
+    }
+
+    public long getAgenteSaudeIdPorNome(String nome) throws SQLException {
+        String sql = "SELECT id FROM `agente-saude` WHERE nome = ?";  // Use crases (`) ao redor do nome da tabela
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong("id");
+                } else {
+                    throw new SQLException("Agente de saúde não encontrado com o nome: " + nome);
+                }
+            }
+        }
+    }
+
+    private void preencherStatement(PreparedStatement stmt, Agenda agenda) throws SQLException {
+        stmt.setObject(1, agenda.getData());
+        stmt.setObject(2, agenda.getHorario());
+        stmt.setLong(3, agenda.getAgenteSaudeId());
+        stmt.setString(4, agenda.getVacina());
+        stmt.setString(5, agenda.getNome());
+        stmt.setString(6, agenda.getCpf());
+        stmt.setString(7, agenda.getCep());
+        stmt.setString(8, agenda.getTelefone());
+        stmt.setObject(9, agenda.getCreatedAt());
+        stmt.setObject(10, agenda.getUpdatedAt());
+    }
+
+    private Agenda criarAgenda(ResultSet rs) throws SQLException {
+        LocalDate data = rs.getObject("data", LocalDate.class);
+        LocalTime horario = rs.getObject("horario", LocalTime.class);
+        long agenteSaudeId = rs.getLong("agente-saude_id");
+        String vacina = rs.getString("vacina");
+        String nome = rs.getString("nome");
+        String cpf = rs.getString("cpf");
+        String cep = rs.getString("cep");
+        String telefone = rs.getString("telefone");
+        LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
+        LocalDateTime updatedAt = rs.getObject("updated_at", LocalDateTime.class);
+        return new Agenda(rs.getLong("id"), data, horario, agenteSaudeId, vacina, nome, cpf, cep, telefone, createdAt, updatedAt);
     }
 
     public void fecharConexao() {
-        try {
-            if (connection != null && !connection.isClosed()) {
+        if (connection != null) {
+            try {
                 connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao fechar conexão com banco de dados: " + e.getMessage());
         }
     }
 }

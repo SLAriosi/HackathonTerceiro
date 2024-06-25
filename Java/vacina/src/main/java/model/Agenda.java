@@ -1,5 +1,7 @@
 package model;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Agenda {
@@ -12,10 +14,10 @@ public class Agenda {
     private String cpf;
     private String cep;
     private String telefone;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    // Construtores, getters e setters
-
-    public Agenda(long id, LocalDate data, LocalTime horario, long agenteSaudeId, String vacina, String nome, String cpf, String cep, String telefone) {
+    public Agenda(long id, LocalDate data, LocalTime horario, long agenteSaudeId, String vacina, String nome, String cpf, String cep, String telefone, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.data = data;
         this.horario = horario;
@@ -25,6 +27,8 @@ public class Agenda {
         this.cpf = cpf;
         this.cep = cep;
         this.telefone = telefone;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() { return id; }
@@ -53,4 +57,10 @@ public class Agenda {
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

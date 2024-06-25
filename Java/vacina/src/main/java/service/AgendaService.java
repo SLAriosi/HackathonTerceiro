@@ -4,38 +4,45 @@ import dao.AgendaDAO;
 import model.Agenda;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AgendaService {
-
     private final AgendaDAO agendaDAO;
 
     public AgendaService() throws SQLException {
         this.agendaDAO = new AgendaDAO();
     }
 
-    public void salvarAgenda(Agenda agenda) throws SQLException {
-        agendaDAO.inserir(agenda);
+    public void salvar(Agenda agenda) throws SQLException {
+        if (agenda.getId() == 0) {
+            agenda.setCreatedAt(LocalDateTime.now());
+            agenda.setUpdatedAt(LocalDateTime.now());
+            agendaDAO.inserir(agenda);
+        } else {
+            agenda.setUpdatedAt(LocalDateTime.now());
+            agendaDAO.atualizar(agenda);
+        }
     }
 
-    public void atualizarAgenda(Agenda agenda) throws SQLException {
-        agendaDAO.atualizar(agenda);
-    }
-
-    public void deletarAgenda(Long id) throws SQLException {
+    public void deletar(long id) throws SQLException {
         agendaDAO.excluir(id);
     }
 
-    public List<Agenda> listarTodasAgendas() throws SQLException {
+    public List<Agenda> listar() throws SQLException {
         return agendaDAO.listarTodos();
     }
 
-    public Agenda buscarAgendaPorId(Long id) throws SQLException {
-        return agendaDAO.buscarPorId(id);
+    public List<Agenda> buscarPorCPF(String cpf) throws SQLException {
+        return agendaDAO.buscarPorCPF(cpf);
     }
 
-    public List<Agenda> pesquisar(String termo) throws SQLException {
-        return agendaDAO.pesquisar(termo);
+    public long getAgenteSaudeIdPorNome(String nome) throws SQLException {
+        return agendaDAO.getAgenteSaudeIdPorNome(nome);
+    }
+
+    public List<String> listarNomesAgentes() throws SQLException {
+        return agendaDAO.listarNomesAgentes();
     }
 
     public void fecharConexao() {

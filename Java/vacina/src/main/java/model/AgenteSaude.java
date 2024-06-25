@@ -6,12 +6,6 @@ public class AgenteSaude {
     private String username;
     private String password;
 
-    public AgenteSaude(Long id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
-    // New constructor to include username and password
     public AgenteSaude(Long id, String nome, String username, String password) {
         this.id = id;
         this.nome = nome;

@@ -4,10 +4,10 @@ import dao.AgendaDAO;
 import model.Agenda;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class AgendaService {
+
     private final AgendaDAO agendaDAO;
 
     public AgendaService() throws SQLException {
@@ -15,37 +15,39 @@ public class AgendaService {
     }
 
     public void salvar(Agenda agenda) throws SQLException {
-        if (agenda.getId() == 0) {
-            agenda.setCreatedAt(LocalDateTime.now());
-            agenda.setUpdatedAt(LocalDateTime.now());
-            agendaDAO.inserir(agenda);
-        } else {
-            agenda.setUpdatedAt(LocalDateTime.now());
-            agendaDAO.atualizar(agenda);
-        }
+        agendaDAO.salvar(agenda);
     }
 
-    public void deletar(long id) throws SQLException {
+    public void excluir(long id) throws SQLException {
         agendaDAO.excluir(id);
     }
 
-    public List<Agenda> listar() throws SQLException {
+    public List<Agenda> listarTodos() throws SQLException {
         return agendaDAO.listarTodos();
     }
 
-    public List<Agenda> buscarPorCPF(String cpf) throws SQLException {
-        return agendaDAO.buscarPorCPF(cpf);
+    public String getNomeAgentePorId(long id) throws SQLException {
+        return agendaDAO.getNomeAgentePorId(id);
     }
 
     public long getAgenteSaudeIdPorNome(String nome) throws SQLException {
         return agendaDAO.getAgenteSaudeIdPorNome(nome);
     }
 
+    public void fecharConexao() {
+        agendaDAO.fecharConexao();
+    }
+
     public List<String> listarNomesAgentes() throws SQLException {
         return agendaDAO.listarNomesAgentes();
     }
 
-    public void fecharConexao() {
-        agendaDAO.fecharConexao();
+    public List<String> listarNomesVacinas() throws SQLException {
+        return agendaDAO.listarNomesVacinas();
+    }
+
+    // Método para buscar agendamentos por CPF
+    public List<Agenda> buscarPorCPF(String cpf) throws SQLException {
+        return agendaDAO.buscarPorCPF(cpf);
     }
 }

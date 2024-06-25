@@ -5,6 +5,7 @@ public class Historico {
     private long idosoId;
     private long agendaId;
     private long vacinaId;
+    private AgenteSaude agenteSaude;
 
     public Historico() {
         // Construtor padrão vazio
@@ -15,6 +16,14 @@ public class Historico {
         this.idosoId = idosoId;
         this.agendaId = agendaId;
         this.vacinaId = vacinaId;
+    }
+
+    public Historico(long id, long idosoId, long agendaId, long vacinaId, AgenteSaude agenteSaude) {
+        this.id = id;
+        this.idosoId = idosoId;
+        this.agendaId = agendaId;
+        this.vacinaId = vacinaId;
+        this.agenteSaude = agenteSaude;
     }
 
     // Getters e Setters
@@ -51,6 +60,14 @@ public class Historico {
         this.vacinaId = vacinaId;
     }
 
+    public AgenteSaude getAgenteSaude() {
+        return agenteSaude;
+    }
+
+    public void setAgenteSaude(AgenteSaude agenteSaude) {
+        this.agenteSaude = agenteSaude;
+    }
+
     // Método toString para representação textual do objeto
     @Override
     public String toString() {
@@ -59,6 +76,7 @@ public class Historico {
                 ", idosoId=" + idosoId +
                 ", agendaId=" + agendaId +
                 ", vacinaId=" + vacinaId +
+                ", agenteSaude=" + (agenteSaude != null ? agenteSaude.getNome() : "null") +
                 '}';
     }
 }

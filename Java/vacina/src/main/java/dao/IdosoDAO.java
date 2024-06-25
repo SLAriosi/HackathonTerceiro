@@ -2,16 +2,11 @@ package dao;
 
 import model.Idoso;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IdosoDAO {
-
     private final Connection connection;
 
     public IdosoDAO() throws SQLException {
@@ -25,66 +20,114 @@ public class IdosoDAO {
     }
 
     public void inserir(Idoso idoso) throws SQLException {
-        String sql = "INSERT INTO idoso (nome, cpf, cep, telefone, numero_casa, condicoes, data_nascimento) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, idoso.getNome());
-            ps.setString(2, idoso.getCpf());
-            ps.setString(3, idoso.getCep());
-            ps.setString(4, idoso.getTelefone());
-            ps.setString(5, idoso.getNumero_casa());
-            ps.setString(6, idoso.getCondicoes());
-            ps.setDate(7, new java.sql.Date(idoso.getDataNascimento().getTime()));
-            ps.executeUpdate(); // Usar executeUpdate para INSERT
+        String sql = "INSERT INTO idoso (nome, cpf, cep, telefone, numero_casa, condicoes, data_nascimento) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, idoso.getNome());
+            stmt.setString(2, idoso.getCpf());
+            stmt.setString(3, idoso.getCep());
+            stmt.setString(4, idoso.getTelefone());
+            stmt.setString(5, idoso.getNumeroCasa());
+            stmt.setString(6, idoso.getCondicoes());
+            stmt.setDate(7, new Date(idoso.getDataNascimento().getTime()));
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Falha ao inserir o idoso.");
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    idoso.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Falha ao obter o ID gerado para o idoso.");
+                }
+            }
         }
     }
 
-
     public void atualizar(Idoso idoso) throws SQLException {
-        String sql = "UPDATE idoso SET nome = ?, cpf = ?, cep = ?, telefone = ?, numero_casa = ?, condicoes = ?, data_nascimento = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, idoso.getNome());
-            ps.setString(2, idoso.getCpf());
-            ps.setString(3, idoso.getCep());
-            ps.setString(4, idoso.getTelefone());
-            ps.setString(5, idoso.getNumero_casa());
-            ps.setString(6, idoso.getCondicoes());
-            ps.setDate(7, new java.sql.Date(idoso.getDataNascimento().getTime()));
-            ps.setInt(8, idoso.getId());
-            ps.executeUpdate();
+        String sql = "UPDATE idoso SET nome=?, cpf=?, cep=?, telefone=?, numero_casa=?, condicoes=?, data_nascimento=? " +
+                "WHERE id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, idoso.getNome());
+            stmt.setString(2, idoso.getCpf());
+            stmt.setString(3, idoso.getCep());
+            stmt.setString(4, idoso.getTelefone());
+            stmt.setString(5, idoso.getNumeroCasa());
+            stmt.setString(6, idoso.getCondicoes());
+            stmt.setDate(7, new Date(idoso.getDataNascimento().getTime()));
+            stmt.setInt(8, idoso.getId());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Falha ao atualizar o idoso.");
+            }
         }
     }
 
     public void deletar(int id) throws SQLException {
-        String sql = "DELETE FROM idoso WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        String sql = "DELETE FROM idoso WHERE id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Falha ao excluir o idoso.");
+            }
         }
     }
 
     public List<Idoso> listarTodos() throws SQLException {
         List<Idoso> idosos = new ArrayList<>();
         String sql = "SELECT * FROM idoso";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Idoso idoso = new Idoso(
-                        rs.getInt("id"),
-                        rs.getString("nome"),
-                        rs.getString("cpf"),
-                        rs.getString("cep"),
-                        rs.getString("telefone"),
-                        rs.getString("numero_casa"),
-                        rs.getString("condicoes"),
-                        rs.getDate("data_nascimento")
-                );
+                Idoso idoso = construirIdoso(rs);
                 idosos.add(idoso);
             }
         }
-
         return idosos;
+    }
+
+    public Idoso buscarPorCPF(String cpf) throws SQLException {
+        String sql = "SELECT * FROM idoso WHERE cpf=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return construirIdoso(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Idoso buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM idoso WHERE id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return construirIdoso(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Idoso construirIdoso(ResultSet rs) throws SQLException {
+        return new Idoso(
+                rs.getInt("id"),
+                rs.getString("nome"),
+                rs.getString("telefone"),
+                rs.getString("cep"),
+                rs.getString("cpf"),
+                rs.getString("numero_casa"),
+                rs.getString("condicoes"),
+                rs.getDate("data_nascimento")
+        );
     }
 
     public void fecharConexao() {
@@ -93,7 +136,7 @@ public class IdosoDAO {
                 connection.close();
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao fechar conexão com banco de dados: " + e.getMessage());
+            throw new RuntimeException("Erro ao fechar conexão com banco de dados: " + e.getMessage());
         }
     }
 }

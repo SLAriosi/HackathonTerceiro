@@ -28,4 +28,12 @@ public class IdosoService {
     public List<Idoso> findAll() throws SQLException {
         return idosoDAO.listarTodos();
     }
+
+    public Idoso buscarPorCPF(String cpf) throws SQLException {
+        return idosoDAO.buscarPorCPF(cpf);
+    }
+
+    public Idoso buscarPorId(int id) throws SQLException {
+        return idosoDAO.buscarPorId(id);
+    }
 }

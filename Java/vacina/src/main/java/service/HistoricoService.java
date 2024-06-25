@@ -2,6 +2,7 @@ package service;
 
 import dao.HistoricoDAO;
 import model.Historico;
+import model.AgenteSaude;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,7 +16,11 @@ public class HistoricoService {
     }
 
     public void salvar(Historico historico) throws SQLException {
-        historicoDAO.inserir(historico);
+        if (historico.getId() == 0) {
+            historicoDAO.inserir(historico);
+        } else {
+            historicoDAO.atualizar(historico);
+        }
     }
 
     public void atualizar(Historico historico) throws SQLException {
@@ -32,6 +37,14 @@ public class HistoricoService {
 
     public Historico getById(Long id) throws SQLException {
         return historicoDAO.buscarPorId(id);
+    }
+
+    public List<AgenteSaude> getAllAgentesSaude() throws SQLException {
+        return historicoDAO.listarAgentesSaude();
+    }
+
+    public List<Historico> search(String query) throws SQLException {
+        return historicoDAO.buscar(query);
     }
 
     public void fecharConexao() {

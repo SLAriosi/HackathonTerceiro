@@ -45,7 +45,7 @@ public class VacinaDAO {
                 vacina.setNome(rs.getString("nome"));
                 vacinas.add(vacina);
             }
-            return vacinas; // Retornar a lista de vacinas após o loop
+            return vacinas;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao listar vacinas", e);
         }
